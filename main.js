@@ -83,7 +83,8 @@ async function initGame() {
         window.gameConfig.VISUAL_MAP_WIDTH = window.missionConfig.mapWidth;
         window.gameConfig.VISUAL_MAP_HEIGHT = window.missionConfig.mapHeight;
 
-        if (window.missionConfig.playerCount && window.gameConfig.ALL_PLAYERS) {
+        // O parâmetro ?players=N da URL (lido no config.js) tem prioridade sobre o playerCount da missão
+        if (!urlParams.get('players') && window.missionConfig.playerCount && window.gameConfig.ALL_PLAYERS) {
              const count = window.missionConfig.playerCount;
              window.gameConfig.PLAYERS = window.gameConfig.ALL_PLAYERS.slice(0, Math.max(1, Math.min(5, count)));
         }

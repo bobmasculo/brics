@@ -1137,6 +1137,18 @@ export default class GameScene extends Phaser.Scene {
                 }
             }
 
+            // --- LÓGICA DE WARP/BLINK (Cooldown) ---
+            if (this.currentWarpCooldown > 0) {
+                this.currentWarpCooldown -= delta;
+                if (this.currentWarpCooldown <= 0) {
+                    this.currentWarpCooldown = 0;
+                    if (this.uiManager) {
+                        this.uiManager.enableButton('warp', true);
+                        this.uiManager.flashButton('warp');
+                    }
+                }
+            }
+
             // Movimento da Câmera
             const cam = this.cameras.main;
             const speed = 10;
@@ -1228,12 +1240,12 @@ export default class GameScene extends Phaser.Scene {
 
                         this.rangeMaskGraphics.clear();
                         this.rangeMaskGraphics.fillStyle(0xffffff);
-                        this.rangeMaskGraphics.fillCircle(0, 0, range);
+                        // O range está em unidades do mundo: converte para pixels de tela (zoomX/zoomY diferem no modo isométrico)
+                        this.rangeMaskGraphics.fillEllipse(0, 0, range * 2 * cam.zoomX, range * 2 * cam.zoomY);
 
                         // Atualiza a posição do gráfico da máscara para seguir o player (em coordenadas de tela)
-                        // Ajustado para considerar o zoom da câmera
-                        const screenX = (unit.x - cam.worldView.x) * cam.zoom;
-                        const screenY = (unit.y - cam.worldView.y) * cam.zoom;
+                        const screenX = (unit.x - cam.worldView.x) * cam.zoomX;
+                        const screenY = (unit.y - cam.worldView.y) * cam.zoomY;
 
                         this.rangeMaskGraphics.setPosition(screenX, screenY);
                     } else {
@@ -1251,9 +1263,11 @@ export default class GameScene extends Phaser.Scene {
 
             // Atualiza Overlay de Sangue (Vida Baixa < 20%)
             if (this.unitController && this.unitController.selectedUnits.length > 0) {
-                const maxHealth = window.gameConfig.MAX_HEALTH || 100;
-                // Verifica se algum personagem selecionado está com vida crítica
-                const hasLowHealth = this.unitController.selectedUnits.some(u => (u.health / maxHealth) < 0.2 && u.health > 0);
+                // Verifica se algum personagem selecionado está com vida crítica (usa a vida máxima de cada unidade)
+                const hasLowHealth = this.unitController.selectedUnits.some(u => {
+                    const maxHealth = u.maxHp || window.gameConfig.MAX_HEALTH || 100;
+                    return (u.health / maxHealth) < 0.2 && u.health > 0;
+                });
 
                 if (hasLowHealth) {
                     this.bloodOverlay.setVisible(true);
@@ -1342,7 +1356,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Atualiza barras de vida dos Players imediatamente (se visíveis)
         this.players.forEach(p => {
-            if (p.active && p.health > 0) p.drawHealthBar();
+            if (p.sprite && p.sprite.active && p.health > 0 && p.drawHealthBar) p.drawHealthBar();
         });
 
         // Aplica o filtro global de WebGL
@@ -1495,12 +1509,17 @@ export default class GameScene extends Phaser.Scene {
         if (player.sprite) {
             this.players.push(player);
 
-            // Adiciona colisões (Cenário, Interiores, Bordas)
+            // Adiciona colisões (Cenário, Interiores, Bordas) - mesmo callback dos players iniciais
+            const stopOnHit = (playerSprite) => {
+                if (playerSprite && playerSprite._unit && playerSprite._unit.stopMovement) {
+                    playerSprite._unit.stopMovement();
+                }
+            };
             const scenarioObs = this.scenarioManager.getObstacles();
-            if (scenarioObs) this.physics.add.collider(player.sprite, scenarioObs);
+            if (scenarioObs) this.physics.add.collider(player.sprite, scenarioObs, stopOnHit);
 
             const interiorObs = this.interiorsManager.getObstacles();
-            if (interiorObs) this.physics.add.collider(player.sprite, interiorObs);
+            if (interiorObs) this.physics.add.collider(player.sprite, interiorObs, stopOnHit);
 
             if (this.mapBoundaries) this.physics.add.collider(player.sprite, this.mapBoundaries);
 
@@ -1926,7 +1945,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     addGrid() {
-        const { MAP_WIDTH, MAP_HEIGHT, TILE_SIZE } = window.gameConfig;
+        // Limita a grade à área visual do mapa (o mundo físico de 105000px geraria milhares de linhas)
+        const { TILE_SIZE } = window.gameConfig;
+        const MAP_WIDTH = window.gameConfig.VISUAL_MAP_WIDTH || 3200;
+        const MAP_HEIGHT = window.gameConfig.VISUAL_MAP_HEIGHT || 1800;
         this.gridGraphics = this.add.graphics();
         this.gridGraphics.lineStyle(1, 0xffffff, 0.3);
         for (let x = 0; x <= MAP_WIDTH; x += TILE_SIZE) {
@@ -2263,6 +2285,7 @@ export default class GameScene extends Phaser.Scene {
         }
 
         // Reseta o estado de pause (quem for abrir o próximo menu pausará novamente se necessário)
+        this.hidePauseScreen();
         this.isPaused = false;
         this.physics.world.resume();
         if (this.anims) this.anims.resumeAll();
@@ -2559,8 +2582,6 @@ export default class GameScene extends Phaser.Scene {
         const scaleY = maxHeight / this.mapImage.height;
         const scale = Math.min(scaleX, scaleY, 1);
         this.mapImage.setScale(scale);
-        // Reajusta escala para preencher todo o popup
-        this.mapImage.setDisplaySize(this.mapPopupWidth, this.mapPopupHeight);
 
         if (this.uiManager) this.uiManager.updateStatus(this.languageManager.get('status_map_page', { current: this.currentMapIndex + 1, total: 3 }));
     }
