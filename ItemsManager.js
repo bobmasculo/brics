@@ -132,22 +132,31 @@ export default class ItemsManager {
 
         // Só pega se o jogador ainda não tiver esse item no inventário OU se for medkit (acumulável)
         if (item.itemKey === 'medkit' || !player.inventory.includes(item.itemKey)) {
-            // Regra: Armas não podem ir para o acesso rápido (slots 0-3)
-            if (isWeapon) {
-                while (player.inventory.length < 4) player.inventory.push(null);
+            // Regra: só itens de ação vão para o Acesso Rápido (0-3); o resto vai para a Mochila (4+)
+            const inv = player.inventory;
+            if (window.gameConfig.isActionItem(item.itemKey)) {
+                const stackIndex = inv.lastIndexOf(item.itemKey);
+                const emptyQuickIndex = inv.slice(0, 4).indexOf(null);
+                if (stackIndex !== -1 && stackIndex < 4) {
+                    inv.splice(stackIndex + 1, 0, item.itemKey); // Empilha junto do mesmo item
+                } else if (emptyQuickIndex !== -1) {
+                    inv[emptyQuickIndex] = item.itemKey;
+                } else {
+                    inv.push(item.itemKey); // Ocupa o próximo slot (Acesso Rápido se houver espaço, senão Mochila)
+                }
+            } else {
+                while (inv.length < 4) inv.push(null);
+                inv.push(item.itemKey);
             }
-
-            player.inventory.push(item.itemKey);
 
             // --- Lógica de Equipar e Notificar ---
 
             // 1. Auto-equipar se for uma arma com dano
             let actionVerb = "pegou";
             // A arma equipada fica fora do inventário: troca com a anterior (que volta para a mochila) para não duplicar/perder.
-            // Bomba e granada têm dano mas são consumíveis/itens de missão: não equipam.
-            const consumables = ['bomba', 'smoke_grenade'];
-            if (wConfig && wConfig.minDamage && !consumables.includes(item.itemKey)) {
-                const newIndex = player.inventory.length - 1;
+            // Itens de ação (bomba, granada) têm dano mas são consumíveis/itens de missão: não equipam.
+            if (wConfig && wConfig.minDamage && !window.gameConfig.isActionItem(item.itemKey)) {
+                const newIndex = player.inventory.lastIndexOf(item.itemKey);
                 if (this.scene.inventoryPanel) {
                     this.scene.inventoryPanel.equipWeapon(player, newIndex, item.itemKey);
                 } else {
@@ -155,6 +164,7 @@ export default class ItemsManager {
                 }
                 actionVerb = "equipou";
             }
+            window.gameConfig.normalizeInventory(player.inventory);
 
             // 2. Preparar a mensagem de notificação
             let rank = "Agente";

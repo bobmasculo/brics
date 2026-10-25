@@ -172,6 +172,9 @@ export default class InventoryPanel {
 
         const unit = selectedUnits[0];
         this.lastSelectedUnit = unit; // Atualiza a unidade rastreada
+
+        // Garante a regra: Acesso Rápido (0-3) só com itens de ação; o resto fica na Mochila
+        if (unit && unit.inventory) window.gameConfig.normalizeInventory(unit.inventory);
         
         // --- 1. Imagem do Jogador (Esquerda) ---
         const leftX = cx - 140;
@@ -1055,6 +1058,13 @@ export default class InventoryPanel {
 
     transferToPlayer(unit, itemIndex, toQuickAccess, moveOne = false) {
         const itemKey = this.teamInventory[itemIndex];
+
+        // Regra: só itens de ação podem ir para o Acesso Rápido
+        if (toQuickAccess && !window.gameConfig.isActionItem(itemKey)) {
+            if (this.scene.uiManager) this.scene.uiManager.updateStatus(this.scene.languageManager.get('inventory_only_action_items'));
+            this.updateContent(); // Devolve a imagem arrastada ao lugar
+            return;
+        }
         const isWeapon = window.gameConfig.WEAPONS[itemKey] && (window.gameConfig.WEAPONS[itemKey].minDamage !== undefined || window.gameConfig.WEAPONS[itemKey].damage !== undefined);
         
         if (isWeapon) {
@@ -1119,10 +1129,10 @@ export default class InventoryPanel {
     moveWithinPlayer(unit, index, toQuickAccess, moveOne = false) {
         const itemKey = unit.inventory[index];
         
-        // Regra: Armas não podem ir para o Acesso Rápido
-        const isWeapon = window.gameConfig.WEAPONS[itemKey] && (window.gameConfig.WEAPONS[itemKey].minDamage !== undefined || window.gameConfig.WEAPONS[itemKey].damage !== undefined);
-        if (toQuickAccess && isWeapon) {
-            if (this.scene.uiManager) this.scene.uiManager.updateStatus(this.scene.languageManager.get('inventory_weapons_no_quick_access'));
+        // Regra: só itens de ação podem ir para o Acesso Rápido (armas, armaduras etc. ficam na Mochila)
+        if (toQuickAccess && !window.gameConfig.isActionItem(itemKey)) {
+            if (this.scene.uiManager) this.scene.uiManager.updateStatus(this.scene.languageManager.get('inventory_only_action_items'));
+            this.updateContent(); // Devolve a imagem arrastada ao lugar
             return;
         }
 

@@ -183,6 +183,32 @@
         { key: 'xp_team_money', chance: TEAM_XP_DROP_CHANCE, scale: 0.05 },
     ];
 
+    // Itens de AÇÃO: os únicos que podem ficar no Acesso Rápido / atalhos 1-4 (são usados direto pelo player).
+    // Armas, armaduras e o resto ficam só na Mochila.
+    const ACTION_ITEMS = ['medkit', 'smoke_grenade', 'reviver', 'bomba'];
+    const isActionItem = (itemKey) => !!itemKey && ACTION_ITEMS.includes(itemKey);
+
+    // Garante a regra no array de inventário (0-3 = Acesso Rápido, 4+ = Mochila):
+    // itens que não são de ação saem das posições 0-3 e vão para a Mochila. Altera o array recebido.
+    const normalizeInventory = (inventory) => {
+        if (!Array.isArray(inventory)) return inventory;
+        const quick = [];
+        const moved = [];
+        inventory.slice(0, 4).forEach(item => {
+            if (item === null || isActionItem(item)) quick.push(item);
+            else moved.push(item);
+        });
+        const backpack = [...moved, ...inventory.slice(4)].filter(item => item !== null); // Mochila não guarda espaços vazios
+        if (backpack.length > 0) {
+            while (quick.length < 4) quick.push(null); // Preenche o Acesso Rápido para a Mochila começar no índice 4
+        } else {
+            while (quick.length > 0 && quick[quick.length - 1] === null) quick.pop();
+        }
+        inventory.length = 0;
+        inventory.push(...quick, ...backpack);
+        return inventory;
+    };
+
     const ARMORS = {
         'helmet': { name: 'Elmo Basico', image: 'assets/armadura/helmo.png', type: 'helmet', slot: 1,armor: 20 },
         'chest': { name: 'Peito Basico', image: 'assets/armadura/peito.png', type: 'chest', slot: 2,armor: 20 },
@@ -498,6 +524,9 @@
         getXpDetails, // Exporta a função auxiliar
         WEAPONS,
         DROPS,
+        ACTION_ITEMS,
+        isActionItem,
+        normalizeInventory,
         ARMORS,
         SCENARIO_ASSETS,
         // Habilita desenho dos corpos para debug (útil para ajustar bodyWidth/bodyHeight/offset)

@@ -1110,8 +1110,8 @@ export default class UIManager {
             }
         });
 
-        // 2. Filtrar para mostrar apenas itens "úteis" na visão multi-seleção
-        const usableItems = ['medkit', 'smoke_grenade', 'reviver'];
+        // 2. Filtrar para mostrar apenas itens de ação (os únicos permitidos nos atalhos 1-4)
+        const usableItems = window.gameConfig.ACTION_ITEMS;
         const uniqueUsableItems = [];
         usableItems.forEach(item => {
             if (totalItemCounts[item] > 0) {
@@ -1155,10 +1155,10 @@ export default class UIManager {
             itemCounts[item] = (itemCounts[item] || 0) + 1;
         });
         
-        // 2. Obter os itens únicos na ordem em que aparecem pela primeira vez
+        // 2. Obter os itens de AÇÃO únicos na ordem em que aparecem (armas, armaduras etc. ficam só na Mochila)
         const uniqueItems = [];
         inventory.forEach(item => {
-            if (!uniqueItems.includes(item)) {
+            if (window.gameConfig.isActionItem(item) && !uniqueItems.includes(item)) {
                 uniqueItems.push(item);
             }
         });

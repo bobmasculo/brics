@@ -90,6 +90,7 @@ export default class Player {
         this.xp = 0;
         this.level = 1;
         this.loadStats(); // Carrega dados salvos
+        window.gameConfig.normalizeInventory(this.inventory); // Acesso Rápido (0-3) só com itens de ação
         
         this.recalculateStats(); // Calcula atributos baseados no nível
         this.health = this.maxHp; // Começa com a vida cheia do novo nível
