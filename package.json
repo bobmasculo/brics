@@ -1,0 +1,27 @@
+{
+  "name": "phaser-tactics-game",
+  "version": "1.0.0",
+  "description": "A tactical turn-based strategy game built with Phaser.js and TypeScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "serve": "npx http-server .",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": ["phaser", "typescript", "game", "tactics", "strategy"],
+  "author": "Game Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "phaser": "^3.70.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

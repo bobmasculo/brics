@@ -1,0 +1,148 @@
+// NPCs para Phaser.js
+const npcs = [
+    { 
+        id: 'torre_6', 
+        x: 970, 
+        y: 625, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 970, y: 625}]
+    },
+    { 
+        id: 'torre_1', 
+        x: 1525, 
+        y: 620, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 1525, y: 620}]
+    },
+    { 
+        id: 'torre_2', 
+        x: 790, 
+        y: 470, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 790, y: 470}]
+    },
+    { 
+        id: 'torre_3', 
+        x: 1085, 
+        y: 155, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 1085, y: 155}]
+    },
+    { 
+        id: 'torre_4', 
+        x: 1430, 
+        y: 145, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 1430, y: 145}]
+    },
+    { 
+        id: 'pessoa_1', 
+        x: 935, 
+        y: 50, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 935, y: 50}]
+    },
+    { 
+        id: 'pessoa_4', 
+        x: 1695, 
+        y: 135, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 1695, y: 135}]
+    },
+    { 
+        id: 'torre_5', 
+        x: 1690, 
+        y: 465, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 1690, y: 465}]
+    },
+    { 
+        id: 'pessoa_3', 
+        x: 1805, 
+        y: 1230, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 1805, y: 1230}]
+    },
+    { 
+        id: 'pessoa_5', 
+        x: 775, 
+        y: 1290, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 775, y: 1290}]
+    },
+    { 
+        id: 'pessoa_6', 
+        x: 1235, 
+        y: 555, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 1235, y: 555}]
+    },
+    { 
+        id: 'pessoa_5', 
+        x: 675, 
+        y: 605, 
+        texture: 'npc_alien', 
+        path: 'assets/alien.png', 
+        width: 64, 
+        height: 64, 
+        scale: 1, 
+        speed: 60, 
+        waypoints: [{x: 675, y: 605}]
+    }
+];
+

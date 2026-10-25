@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Brics</title>
+    <style>
+        body {
+         width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script src="easystar-0.4.4.js"></script>
+
+    <!-- Load Phaser from CDN -->
+    <script src="phaser.js"></script>
+
+    <!-- Load NPC group configuration (Must be before config_missoes.js) -->
+    <script src="config_npc_missoes.js"></script>
+
+    <!-- Load mission configuration (Must be before config.js) -->
+    <script src="config_missoes.js"></script>
+
+    <!-- Load game configuration -->
+    <script src="config.js"></script>
+
+    <!-- Ponto de entrada do jogo (Módulo ES) -->
+    <!-- O type="module" é essencial para usar imports/exports -->
+    <script type="module" src="main.js"></script>
+</body>
+</html>

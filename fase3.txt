@@ -1,0 +1,20 @@
+Vai ter um npc falando que o objetivo
+
+Vão ficar 3 npcs em cada canto que eu tenho de matar cada um deles a deixa a torre vuneravel.
+
+ele tem de ir para o centro
+
+
+centro ele ter de vir x:tempo e vai vir .. ondas de inimigos.
+
+cada grupo vai ter velocidade é variavel.
+
+centro 75 npcs .. de 25 de cada lado.
+
+1- Quero quero que os comando 1,2,3,4,5 seleção de char, seja subistiuida pelo botão proximo: Q para direita (vai selecionar o proximo se tiver no 0 vai para o 1, até o 5, um por vez)
+E seleciona a direita
+
+2- Crianos que vão os 4 quadros de action, vai ter 1,2,3,4 para usar.
+
+Mudar o botão all para o outro lado e colocar all (como) em cima e eu quero botar uma imagem
+

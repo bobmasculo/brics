@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>War UFO BETA - Gerenciador de Animações</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0; 
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Container principal */
+        .main-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Área do jogo */
+        .game-area {
+            flex: 1;
+            position: relative;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-container {
+            width: 800px;
+            height: 600px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Painel de upload */
+        .upload-panel {
+            width: 380px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .upload-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .upload-panel::-webkit-scrollbar-track {
+            background: #1a2632;
+        }
+
+        .upload-panel::-webkit-scrollbar-thumb {
+            background: #4a6a8a;
+            border-radius: 4px;
+        }
+
+        .upload-panel::-webkit-scrollbar-thumb:hover {
+            background: #5a7a9a;
+        }
+
+        /* Header do painel */
+        .panel-header {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4a6a8a;
+        }
+
+        .panel-header h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            color: #ffd700;
+        }
+
+        .panel-header p {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        /* Tabs de navegação */
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid #4a6a8a;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .tab-btn.active {
+            background: #4a6a8a;
+            color: #ffd700;
+        }
+
+        /* Conteúdo das tabs */
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards de animação */
+        .animation-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .animation-card:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+
+        .animation-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .animation-icon {
+            font-size: 1.2em;
+        }
+
+        .direction-select {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #4a6a8a;
+            color: white;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .direction-select option {
+            background: #2c3e50;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #4a6a8a;
+            color: white;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .file-input::-webkit-file-upload-button {
+            background: #4a6a8a;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .preview {
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .preview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 5px;
+            border: 2px solid #4a6a8a;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .upload-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+        }
+
+        .status.success {
+            background: #27ae60;
+            color: white;
+            display: block;
+        }
+
+        .status.error {
+            background: #e74c3c;
+            color: white;
+            display: block;
+        }
+
+        .status.info {
+            background: #3498db;
+            color: white;
+            display: block;
+        }
+
+        /* Info panel */
+        .info-panel {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .info-panel h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-panel p {
+            font-size: 11px;
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+
+        /* Botão toggle do painel */
+        .toggle-panel {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            background: #4a6a8a;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 12px;
+            display: none;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .upload-panel {
+                position: fixed;
+                right: -380px;
+                height: 100vh;
+                z-index: 999;
+            }
+            
+            .upload-panel.open {
+                right: 0;
+            }
+            
+            .toggle-panel {
+                display: block;
+            }
+        }
+    </style>
+    <script src="phaser.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="game-area">
+            <div id="game-container"></div>
+            <button class="toggle-panel" onclick="toggleUploadPanel()">📁 Abrir Painel</button>
+        </div>
+        <div class="upload-panel" id="uploadPanel">
+            <div class="panel-header">
+                <h2>🎮 Gerenciador de Animações</h2>
+                <p>Upload de spritesheets em tempo real</p>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('walk')">🚶 Andar</button>
+                <button class="tab-btn" onclick="switchTab('idle')">💤 Idle</button>
+                <button class="tab-btn" onclick="switchTab('shoot')">🔫 Tiro</button>
+            </div>
+            
+            <div id="walk-tab" class="tab-content active"></div>
+            <div id="idle-tab" class="tab-content"></div>
+            <div id="shoot-tab" class="tab-content"></div>
+            
+            <div class="info-panel">
+                <h4>📋 Informações</h4>
+                <p>✅ Formatos: PNG, JPG, JPEG</p>
+                <p>✅ Máximo: 5MB por arquivo</p>
+                <p>✅ Frame: 256x256 pixels</p>
+                <p>✅ Backup automático criado</p>
+                <p>🔄 Após upload, use F5 para recarregar</p>
+                <p>🎨 Cores atuais são placeholders temporários</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração das direções
+        const directions = {
+            walk: {
+                'dir0': 'Baixo (↓) - w_down.png',
+                'dir1': 'Baixo-Esquerda (↙) - w_down_left.png',
+                'dir2': 'Esquerda (←) - w_left.png',
+                'dir3': 'Esquerda-Cima (↖) - w_up_left.png',
+                'dir4': 'Cima (↑) - w_up.png',
+                'dir5': 'Cima-Direita (↗) - w_up_right.png',
+                'dir6': 'Direita (→) - w_right.png',
+                'dir7': 'Direita-Baixo (↘) - w_down_right.png'
+            },
+            idle: {
+                'dir0': 'Baixo (↓) - i_down.png',
+                'dir1': 'Baixo-Esquerda (↙) - i_down_left.png',
+                'dir2': 'Esquerda (←) - i_left.png',
+                'dir3': 'Esquerda-Cima (↖) - i_up_left.png',
+                'dir4': 'Cima (↑) - i_up.png',
+                'dir5': 'Cima-Direita (↗) - i_up_right.png',
+                'dir6': 'Direita (→) - i_right.png',
+                'dir7': 'Direita-Baixo (↘) - i_down_right.png'
+            },
+            shoot: {
+                'dir0': 'Baixo (↓) - s_down.png',
+                'dir1': 'Baixo-Esquerda (↙) - s_down_left.png',
+                'dir2': 'Esquerda (←) - s_left.png',
+                'dir3': 'Esquerda-Cima (↖) - s_up_left.png',
+                'dir4': 'Cima (↑) - s_up.png',
+                'dir5': 'Cima-Direita (↗) - s_up_right.png',
+                'dir6': 'Direita (→) - s_right.png',
+                'dir7': 'Direita-Baixo (↘) - s_down_right.png'
+            }
+        };
+        
+        // Criar interface para cada tipo de animação
+        function createAnimationCards(type) {
+            const container = document.getElementById(`${type}-tab`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            const dirs = directions[type];
+            
+            for (const [dirKey, dirLabel] of Object.entries(dirs)) {
+                const card = document.createElement('div');
+                card.className = 'animation-card';
+                card.innerHTML = `
+                    <div class="animation-title">
+                        <span class="animation-icon">${getIconForDirection(dirKey)}</span>
+                        ${dirLabel}
+                    </div>
+                    <input type="file" class="file-input" id="${type}-${dirKey}-file" accept="image/png,image/jpeg,image/jpg">
+                    <div class="preview" id="${type}-${dirKey}-preview"></div>
+                    <button class="upload-btn" onclick="uploadAnimation('${type}', '${dirKey}')">📤 Fazer Upload</button>
+                    <div class="status" id="${type}-${dirKey}-status"></div>
+                `;
+                
+                // Adicionar preview
+                const fileInput = card.querySelector(`#${type}-${dirKey}-file`);
+                fileInput.addEventListener('change', (e) => {
+                    const preview = card.querySelector(`#${type}-${dirKey}-preview`);
+                    const file = e.target.files[0];
+                    
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                            preview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        preview.innerHTML = '';
+                        preview.style.display = 'none';
+                    }
+                });
+                
+                container.appendChild(card);
+            }
+        }
+        
+        function getIconForDirection(dir) {
+            const icons = {
+                'dir0': '⬇️',
+                'dir1': '↙️',
+                'dir2': '⬅️',
+                'dir3': '↖️',
+                'dir4': '⬆️',
+                'dir5': '↗️',
+                'dir6': '➡️',
+                'dir7': '↘️'
+            };
+            return icons[dir] || '🎯';
+        }
+        
+        // Função de upload
+        async function uploadAnimation(type, direction) {
+            const fileInput = document.getElementById(`${type}-${direction}-file`);
+            const file = fileInput.files[0];
+            const statusDiv = document.getElementById(`${type}-${direction}-status`);
+            const uploadBtn = statusDiv.parentElement.querySelector('.upload-btn');
+            
+            if (!file) {
+                showStatus(statusDiv, '❌ Selecione um arquivo!', 'error');
+                return;
+            }
+            
+            // Validar tipo
+            const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                showStatus(statusDiv, '❌ Use PNG, JPG ou JPEG!', 'error');
+                return;
+            }
+            
+            // Validar tamanho
+            if (file.size > 5 * 1024 * 1024) {
+                showStatus(statusDiv, '❌ Máximo 5MB!', 'error');
+                return;
+            }
+            
+            // Desabilitar botão
+            uploadBtn.disabled = true;
+            showStatus(statusDiv, '<span class="loading-spinner"></span> Enviando...', 'info');
+            
+            const formData = new FormData();
+            formData.append('animation', file);
+            formData.append('animation_type', type);
+            formData.append('direction', direction);
+            
+            try {
+                const response = await fetch('upload.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(statusDiv, `✅ Upload concluído! Dimensões: ${result.dimensions.width}x${result.dimensions.height}`, 'success');
+                    fileInput.value = '';
+                    const preview = document.getElementById(`${type}-${direction}-preview`);
+                    preview.innerHTML = '';
+                    preview.style.display = 'none';
+                    
+                    // Perguntar se quer recarregar o jogo
+                    setTimeout(() => {
+                        if (confirm('Upload realizado! Deseja recarregar o jogo para ver as novas animações?')) {
+                            location.reload();
+                        }
+                    }, 500);
+                } else {
+                    showStatus(statusDiv, `❌ ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(statusDiv, `❌ Erro: ${error.message}`, 'error');
+            } finally {
+                uploadBtn.disabled = false;
+            }
+        }
+        
+        function showStatus(element, message, type) {
+            element.innerHTML = message;
+            element.className = `status ${type}`;
+            setTimeout(() => {
+                if (element.className === `status ${type}`) {
+                    element.style.display = 'none';
+                }
+            }, 5000);
+        }
+        
+        // Trocar abas
+        function switchTab(tab) {
+            // Esconder todos os conteúdos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Desativar todos os botões
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar aba selecionada
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Toggle do painel (mobile)
+        function toggleUploadPanel() {
+            const panel = document.getElementById('uploadPanel');
+            panel.classList.toggle('open');
+        }
+        
+        // Inicializar
+        createAnimationCards('walk');
+        createAnimationCards('idle');
+        createAnimationCards('shoot');
+        
+        console.log('Interface de upload carregada!');
+    </script>
+    
+    <script src="jogo.js"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+{
+  "metadata": {
+    "name": "Mapa Exportado",
+    "version": "1.0",
+    "exportDate": "2026-01-11T16:47:23.663Z",
+    "author": "Editor de Mapas",
+    "description": "Mapa exportado do Editor de Mapas com NPCs (sem dados base64)"
+  },
+  "settings": {
+    "mapWidth": 3840,
+    "mapHeight": 2240,
+    "gridSize": 10,
+    "snapToGrid": "true",
+    "snapAngle": "0"
+  },
+  "objects": [
+    {
+      "id": "SPAWN",
+      "tipo": "decoracao",
+      "x": 0,
+      "y": 1940,
+      "width": 260,
+      "height": 290,
+      "angle": 0
+    },
+    {
+      "id": "PREDIO1",
+      "tipo": "obstaculo",
+      "x": 140,
+      "y": 1220,
+      "width": 610,
+      "height": 250,
+      "angle": 0
+    },
+    {
+      "id": "PREDIO2",
+      "tipo": "obstaculo",
+      "x": 420,
+      "y": 1540,
+      "width": 400,
+      "height": 270,
+      "angle": 270
+    },
+    {
+      "id": "PREDIO3",
+      "tipo": "obstaculo",
+      "x": 340,
+      "y": 310,
+      "width": 370,
+      "height": 620,
+      "angle": 0
+    },
+    {
+      "id": "PREDIO4",
+      "tipo": "obstaculo",
+      "x": 1060,
+      "y": 1100,
+      "width": 590,
+      "height": 340,
+      "angle": 319
+    },
+    {
+      "id": "PREDIO5",
+      "tipo": "obstaculo",
+      "x": 2070,
+      "y": 550,
+      "width": 590,
+      "height": 340,
+      "angle": 319
+    },
+    {
+      "id": "PREDIO6",
+      "tipo": "obstaculo",
+      "x": 2190,
+      "y": 1330,
+      "width": 590,
+      "height": 340,
+      "angle": 219
+    },
+    {
+      "id": "PREDIO7",
+      "tipo": "obstaculo",
+      "x": 1090,
+      "y": 220,
+      "width": 590,
+      "height": 340,
+      "angle": 219
+    },
+    {
+      "id": "CENARIO1",
+      "tipo": "decoracao",
+      "x": 1630,
+      "y": 1890,
+      "width": 380,
+      "height": 310,
+      "angle": 90
+    },
+    {
+      "id": "CENARIO2",
+      "tipo": "decoracao",
+      "x": 1980,
+      "y": 0,
+      "width": 380,
+      "height": 310,
+      "angle": 90
+    },
+    {
+      "id": "PREDIO8",
+      "tipo": "obstaculo",
+      "x": 3060,
+      "y": 1380,
+      "width": 390,
+      "height": 590,
+      "angle": 360
+    },
+    {
+      "id": "PREDIO9",
+      "tipo": "obstaculo",
+      "x": 2810,
+      "y": 100,
+      "width": 390,
+      "height": 590,
+      "angle": 0
+    },
+    {
+      "id": "PREDIO10",
+      "tipo": "obstaculo",
+      "x": 3290,
+      "y": 510,
+      "width": 280,
+      "height": 450,
+      "angle": 270
+    },
+    {
+      "id": "FONTE",
+      "tipo": "decoracao",
+      "x": 1700,
+      "y": 850,
+      "width": 320,
+      "height": 260,
+      "angle": 0
+    }
+  ],
+  "npcs": [],
+  "obstacles": [
+    {
+      "id": "PREDIO1",
+      "tipo": "obstaculo",
+      "x": 140,
+      "y": 1220,
+      "width": 610,
+      "height": 250,
+      "angle": 0
+    },
+    {
+      "id": "PREDIO2",
+      "tipo": "obstaculo",
+      "x": 420,
+      "y": 1540,
+      "width": 400,
+      "height": 270,
+      "angle": 270
+    },
+    {
+      "id": "PREDIO3",
+      "tipo": "obstaculo",
+      "x": 340,
+      "y": 310,
+      "width": 370,
+      "height": 620,
+      "angle": 0
+    },
+    {
+      "id": "PREDIO4",
+      "tipo": "obstaculo",
+      "x": 1060,
+      "y": 1100,
+      "width": 590,
+      "height": 340,
+      "angle": 319
+    },
+    {
+      "id": "PREDIO5",
+      "tipo": "obstaculo",
+      "x": 2070,
+      "y": 550,
+      "width": 590,
+      "height": 340,
+      "angle": 319
+    },
+    {
+      "id": "PREDIO6",
+      "tipo": "obstaculo",
+      "x": 2190,
+      "y": 1330,
+      "width": 590,
+      "height": 340,
+      "angle": 219
+    },
+    {
+      "id": "PREDIO7",
+      "tipo": "obstaculo",
+      "x": 1090,
+      "y": 220,
+      "width": 590,
+      "height": 340,
+      "angle": 219
+    },
+    {
+      "id": "PREDIO8",
+      "tipo": "obstaculo",
+      "x": 3060,
+      "y": 1380,
+      "width": 390,
+      "height": 590,
+      "angle": 360
+    },
+    {
+      "id": "PREDIO9",
+      "tipo": "obstaculo",
+      "x": 2810,
+      "y": 100,
+      "width": 390,
+      "height": 590,
+      "angle": 0
+    },
+    {
+      "id": "PREDIO10",
+      "tipo": "obstaculo",
+      "x": 3290,
+      "y": 510,
+      "width": 280,
+      "height": 450,
+      "angle": 270
+    }
+  ],
+  "decorations": [
+    {
+      "id": "SPAWN",
+      "tipo": "decoracao",
+      "x": 0,
+      "y": 1940,
+      "width": 260,
+      "height": 290,
+      "angle": 0
+    },
+    {
+      "id": "CENARIO1",
+      "tipo": "decoracao",
+      "x": 1630,
+      "y": 1890,
+      "width": 380,
+      "height": 310,
+      "angle": 90
+    },
+    {
+      "id": "CENARIO2",
+      "tipo": "decoracao",
+      "x": 1980,
+      "y": 0,
+      "width": 380,
+      "height": 310,
+      "angle": 90
+    },
+    {
+      "id": "FONTE",
+      "tipo": "decoracao",
+      "x": 1700,
+      "y": 850,
+      "width": 320,
+      "height": 260,
+      "angle": 0
+    }
+  ]
+}

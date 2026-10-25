@@ -1,0 +1,107 @@
+Complexo industrial inspirado em x-com 1994, syndicate, aliens o oitavo passageiro para meu jogo pixel art 2.5d
+
+com cercas, prédio completo,
+
+Contornos nítidos, sombreamento simples
+
+Iluminação vinda de cima
+
+Fundo transparente
+
+pronto para o jogo
+
+Resultado: consistente e funcional para jogabilidade isométrica.
+
+
+Eu quero implementar tiros diferentes do raycaster para os npcs por exemplo laser que eu tirei se eu quiser mais já quero estruturar isto para colocar tiros diferentes para as minhas armas se eu quiser
+
+
+Abra a imagem no GIMP
+
+No menu superior, vá em Camada → Transparência → Adicionar canal alfa
+Selecione a Ferramenta Seleção por Cor (atalho Shift + O)
+Clique no fundo da imagem
+Ajuste o Limiar na barra lateral para pegar todo o fundo
+Pressione Delete
+
+
+1- Seja um explecialista em phaser. 
+2- analise meu arquivos do jogo e sua lógica. (hoje o npcmanager vai brilhar)
+3- você tem acesso completo e irrestrito aos meus arquivos.
+4- meu objetivo e fazer os npcs atararem ou seja poder configurar a visão (Quando entrar na visão tem de iniciar a perseguição) deles e quanto de dano no config missoes.js 
+
+
+Sâo 5 ROUNDS. cada ROUND são 5 fases:
+
+ROUND vai ter estas 5 fases.
+
+FASES 1 ATÉ 5
+1-) Command Phase
+2-) Movimentacao
+3-) Shoot(Atirar)
+4-) Charge
+5-) Fight (Melee Combat) missão, senão não sortear)
+
+
+INCIO DO PRIMEIRO ROUND:
+
+1-) Sortear a missão primaria(SOMENTE 1X NO JOGO INTEIRO)
+2-) Sortear quem é o atacante e quem é o defensor (SOMENTE 1X NO JOGO INTEIRO)
+3-) Sortear para quem vai começar (SOMENTE 1X NO JOGO INTEIRO)
+4-) Quem GANHOU escolhe se vai começar ou o oponente dando deploy.
+5-) O Deploy funciona colocando UM UNIDADE em campo NA SUA ZONA DE DEPLOY(ela é demarcada de acordo com a missão principal) e ALTERNANDO com o OPONENTE (SOMENTE 1X NO JOGO INTEIRO)
+
+
+ 1-) Command Phase
+(Não focar por enquanto, somente saber que EXISTE)
+
+-Cada Oponente ganha 1CP(Command Point) para utilizar nas Ordens e poderes Especiais
+-Ordens e poderes Especiais de cada Exercicio
+Reservas de Exercito
+Sorteio das missões secundarias.
+
+
+2-) Movimentação(Move Phase)
+REGRA: Andar a quantidade designada na ficha
+REGRA OPCIONAL: Avançar(ação especial do movimento)
+
+EX: Unidade anda 5 quadrados, ela pode andar de 1 a 5 quadradros
+
+AÇÕES ESPECIAIS DO MOVIMENTO: Não é OBRIGATORIO
+Avançar (rola do 1 DADO e avança o VALOR DO MOVIMENTO + O valor obtido no roll do DADO (EX: Unidade anda 5 e tirou um roll no dado de 2, agora nessa fase ela vai anda 7.)
+Porem caso tenha Avançado, não pode atirar. Salvo no caso se a ARMA DA UNIDADE tenha a ASSAULT(poderes especiais da ARMA)
+
+
+3-) Atirar(Shoot Phase)
+REGRA: A unidade vai atirar a quantidade de espaços da arma selecionada.
+
+EX: A arma atira a 12 quadrados, então todos os alvos que estiverem nessa distancia igual ou menor são VALIDOS para acerto.
+
+LEMBRETE: CADA ARMA PODE OU NÃO TER PODERES ESPECIAS:
+EX: Arma com ASSAULT (pode AVANÇAR E DEPOIS ATIRAR)
+
+
+4-) Charge Phase
+REGRA: *Verificar se o Charge é valido (estar a 12 quadrado do alvo e conseguir ficar base a base com o alvo)*
+
+Como é feito:
+Rolar DOIS dados e esse vai ser o resultado do charge e vai conseguir o charge
+EX: Unidade inimiga esta a 9 quadrados da unidade que esta executando o charge, foi rolado 11 nos dados, a unidade tem sucesso no charge e fica base a base da unidade inimiga
+
+
+
+
+(frente)gere em pixel arte sem fundo um soldado cyberpunk com base no jogo syndicate, com tematica grimdark, não usar warhammer, usando um sobretudo e uma uzi 
+orthographic front view of this design,white background
+
+(esquerda)show the model from the left side,
+orthographic left side view of this design,white background
+
+(direita)show the model from the right side,
+orthographic right side view of this design,white background
+
+(atras)mesmo modelo mas com
+orthographic back side view of this design,white background
+
+
+Seja um especialista em phaser.js. 2) Estude meu jogo e os arquivos config.js, npcmanger.js e unitController.js 3) Você tem acesso total para editar os meus arquivos e meu workspace . 4) Meu objetivo hoje é criar um tiro diferente com o raycaster e poder escolher um ou outro para armas

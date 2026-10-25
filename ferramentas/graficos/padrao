@@ -1,0 +1,47 @@
+https://engvee.itch.io/animated-isometric-mechanoid
+
+walk (16 poses)
+
+w_down.png
+w_up.png
+w_left.png
+w_right.png
+w_down_left.png
+w_down_right.png
+w_up_left.png
+w_up_right.png
+
+idle (24 poses)
+
+i_down.png
+i_up.png
+i_left.png
+i_right.png
+i_down_left.png
+i_down_right.png
+i_up_left.png
+i_up_right.png
+
+idle shot(10)
+
+is_down.png
+is_up.png
+is_left.png
+is_right.png
+is_down_left.png
+is_down_right.png
+is_up_left.png
+is_up_right.png
+
+
+
+shoot (16 poses)
+
+s_down.png
+s_up.png
+s_left.png
+s_right.png
+s_down_left.png
+s_down_right.png
+s_up_left.png
+s_up_right.png

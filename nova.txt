@@ -1,0 +1,24 @@
+https://docs.google.com/spreadsheets/d/1QjUFGya6cmlsIYgQ5B_misaOUFKTcjiKHju4mV1K87Y/edit?gid=1293532958#gid=1293532958
+
+
+já peguei
+
+Free base.
+https://assetstore.unity.com/packages/tools/sprite-management/isometric-toolkit-33032#reviews
+
+
+Qual eu gostaria de ter como base
+https://assetstore.unity.com/packages/2d/environments/zombie-city-hd-isometric-tileset-310347
+
+
+
+Cidades.
+https://assetstore.unity.com/packages/2d/environments/cyberpunk-isometric-pixel-art-313193
+
+
+internos. 
+https://assetstore.unity.com/packages/3d/environments/sci-fi/sci-fi-low-poly-isometric-minipack-163242
+
+
+1- Seja um explecialista em phaser. 2- analise meu arquivos do jogo, seus arquivos e sua lógica. (hoje o InventoryPanel.js vai brilhar) 3- você tem acesso completo aos meus arquivos. 
+4- Vamos criar um botão de inventario (que a logica vai ficar no InventoryPanel.js) que aparecer a imagen te players, a mochila deles e mais uns 10 slots que é do time que vou poder passar coisas entre os players, este botão vai ficar onde tem os botões de Steath e Instancia.

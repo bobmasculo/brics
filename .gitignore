@@ -1,0 +1,4 @@
+node_modules/
+dist/
+ferramentas/graficos/dados/backup/
+*.log

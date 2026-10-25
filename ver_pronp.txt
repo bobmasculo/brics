@@ -1,0 +1,12 @@
+Quero adicionar um sistema de diálogo simples que mostre o objetivo da missão na tela antes de começar. Como posso fazer isso?
+
+Como faço para que, ao terminar a missão 1, o jogo vá automaticamente para a missão 2 sem precisar clicar no botão "Próxima Missão"?
+
+Quero adicionar uma loja no Lobby onde posso gastar esse dinheiro para comprar armas melhores antes da próxima missão. Como começar?
+
+
+Quero que, ao completar a demo (todas as missões),
+
+apareça uma tela de "Obrigado por Jogar o prototype do Esquadrão Brics"
+
+ com a pontuação final acumulada.
