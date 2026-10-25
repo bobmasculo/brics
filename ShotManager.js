@@ -369,32 +369,47 @@ export default class ShotManager {
         });
 
         // Instant damage for game feel shots
-        // Logic for players vs NPCs
-        if (this.scene.npcManager && this.scene.npcManager.npcs) {
-             // Find closest target near impact
-             let hitTarget = null;
-             let minDist = 30; // Hit radius
-             this.scene.npcManager.npcs.forEach(npc => {
-                 if (npc.active && !npc.isDead && Phaser.Math.Distance.Between(tx, ty, npc.x, npc.y) < minDist) {
-                     hitTarget = npc;
-                     minDist = Phaser.Math.Distance.Between(tx, ty, npc.x, npc.y);
-                 }
-             });
-             if (hitTarget) {
-                 this.scene.npcManager.takeDamage(hitTarget, damage, source, isCritical);
-             }
-        }
-        
-        // Logic for NPCs vs Players
-        if (source.isEnemy && this.scene.players) {
-             this.scene.players.forEach(player => {
-                 if (player.health > 0 && Phaser.Math.Distance.Between(tx, ty, player.x, player.y) < 30) {
-                     player.takeDamage(damage, source);
-                 }
-             });
-        }
+        this.applyGameFeelImpactDamage(tx, ty, damage, isCritical, source);
     }
 
+
+    // Dano instantâneo dos tiros game_feel: acerta apenas o alvo mais próximo do impacto (raio 30px).
+    // Tiro de NPC só acerta players; tiro de player só acerta NPCs (evita NPC se acertar ou acertar aliados).
+    applyGameFeelImpactDamage(tx, ty, damage, isCritical, source) {
+        const hitRadius = 30;
+
+        if (source && source.isEnemy) {
+            if (!this.scene.players) return;
+            let hitPlayer = null;
+            let minDist = hitRadius;
+            this.scene.players.forEach(player => {
+                if (player.health <= 0) return;
+                const dist = Phaser.Math.Distance.Between(tx, ty, player.x, player.y);
+                if (dist < minDist) {
+                    hitPlayer = player;
+                    minDist = dist;
+                }
+            });
+            if (hitPlayer) hitPlayer.takeDamage(damage, source);
+            return;
+        }
+
+        if (this.scene.npcManager && this.scene.npcManager.npcs) {
+            let hitTarget = null;
+            let minDist = hitRadius;
+            this.scene.npcManager.npcs.forEach(npc => {
+                if (npc === source || !npc.active || npc.isDead) return;
+                const dist = Phaser.Math.Distance.Between(tx, ty, npc.x, npc.y);
+                if (dist < minDist) {
+                    hitTarget = npc;
+                    minDist = dist;
+                }
+            });
+            if (hitTarget) {
+                this.scene.npcManager.takeDamage(hitTarget, damage, source, isCritical);
+            }
+        }
+    }
 
     fireGameFeelProjectile_rifle(startX, startY, tx, ty, damage, isCritical, source, config = {}) {
         const angle = Phaser.Math.Angle.Between(startX, startY, tx, ty);
@@ -469,30 +484,7 @@ export default class ShotManager {
         });
 
         // Instant damage for game feel shots
-        // Logic for players vs NPCs
-        if (this.scene.npcManager && this.scene.npcManager.npcs) {
-             // Find closest target near impact
-             let hitTarget = null;
-             let minDist = 30; // Hit radius
-             this.scene.npcManager.npcs.forEach(npc => {
-                 if (npc.active && !npc.isDead && Phaser.Math.Distance.Between(tx, ty, npc.x, npc.y) < minDist) {
-                     hitTarget = npc;
-                     minDist = Phaser.Math.Distance.Between(tx, ty, npc.x, npc.y);
-                 }
-             });
-             if (hitTarget) {
-                 this.scene.npcManager.takeDamage(hitTarget, damage, source, isCritical);
-             }
-        }
-        
-        // Logic for NPCs vs Players
-        if (source.isEnemy && this.scene.players) {
-             this.scene.players.forEach(player => {
-                 if (player.health > 0 && Phaser.Math.Distance.Between(tx, ty, player.x, player.y) < 30) {
-                     player.takeDamage(damage, source);
-                 }
-             });
-        }
+        this.applyGameFeelImpactDamage(tx, ty, damage, isCritical, source);
     }
 
     fireProjectile(group, startX, startY, tx, ty, damage, isCritical, source, config = {}) {
@@ -565,11 +557,36 @@ export default class ShotManager {
         this.createShellCasing(startX, startY);
         this.createImpactEffect(tx, ty);
 
-        if (target && target.takeDamage) {
-            target.takeDamage(damage, source, isCritical);
-        } else {
+        if (!this.dealDamage(target, damage, source, isCritical)) {
             this.createGroundHitEffect(tx, ty);
         }
+    }
+
+    // NPCs são sprites e recebem dano via NPCManager.takeDamage(npc, ...); Players têm takeDamage próprio.
+    isNpcTarget(target) {
+        const npcManager = this.scene.npcManager;
+        return !!(npcManager && npcManager.npcs && npcManager.npcs.includes(target));
+    }
+
+    isTargetAlive(target) {
+        if (!target || target.isDead) return false;
+        if (this.isNpcTarget(target)) return target.active;
+        if (target.sprite !== undefined) return !!target.sprite && target.sprite.active && target.health > 0;
+        return target.active !== false && (target.health === undefined || target.health > 0);
+    }
+
+    // Aplica dano ao alvo. Retorna true se o alvo podia receber dano.
+    dealDamage(target, damage, source, isCritical = false) {
+        if (!this.isTargetAlive(target)) return false;
+        if (this.isNpcTarget(target)) {
+            this.scene.npcManager.takeDamage(target, damage, source, isCritical);
+            return true;
+        }
+        if (target.takeDamage) {
+            target.takeDamage(damage, source, isCritical);
+            return true;
+        }
+        return false;
     }
 
     fireBeam(startX, startY, tx, ty, damage, isCritical, source, target) {
@@ -586,9 +603,7 @@ export default class ShotManager {
                 
                 if (source.isDead || !source.active) return;
 
-                if (target && target.takeDamage) {
-                    target.takeDamage(damage, source, isCritical);
-                } else {
+                if (!this.dealDamage(target, damage, source, isCritical)) {
                     this.createGroundHitEffect(tx, ty);
                 }
                 
@@ -645,7 +660,7 @@ export default class ShotManager {
             loop: true,
             callback: () => {
                 elapsed += 16;
-                if (elapsed >= duration || !source.active || source.isDead || !target.active || target.health <= 0) {
+                if (elapsed >= duration || !source.active || source.isDead || !this.isTargetAlive(target)) {
                     graphics.destroy();
                     event.remove();
                     return;
@@ -667,8 +682,7 @@ export default class ShotManager {
                     lastTick = elapsed;
                     const totalTicks = duration / tickRate;
                     const damagePerTick = Math.max(1, Math.floor(damage / totalTicks));
-                    if (target.takeDamage) {
-                        target.takeDamage(damagePerTick, source);
+                    if (this.dealDamage(target, damagePerTick, source)) {
                         const angle = Phaser.Math.Angle.Between(sx, sy, tx, ty);
                         this.createMuzzleSparks(tx, ty, angle + Math.PI);
                     }

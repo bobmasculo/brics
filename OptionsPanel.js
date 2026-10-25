@@ -805,7 +805,8 @@ export default class OptionsPanel {
     }
 
     cycleColorBlindMode() {
-        this.scene.cycleColorBlindMode();
+        // O Lobby não implementa cycleColorBlindMode (só a GameScene)
+        if (this.scene.cycleColorBlindMode) this.scene.cycleColorBlindMode();
     }
 
     updateColorBlindDisplay() {

@@ -832,6 +832,12 @@ export default class GameScene extends Phaser.Scene {
             // vamos recriar/atualizar os componentes de UI que contêm texto.
             this.updateAllUITexts();
         });
+        // O parâmetro reset_levels já foi consumido (Player/TeamLevelManager): remove da URL para um F5 não zerar o XP de novo
+        const currentUrl = new URL(window.location.href);
+        if (currentUrl.searchParams.has('reset_levels')) {
+            currentUrl.searchParams.delete('reset_levels');
+            window.history.replaceState(null, '', currentUrl.toString());
+        }
     }
 
     updateAllUITexts() {
@@ -1172,6 +1178,9 @@ export default class GameScene extends Phaser.Scene {
             // Atualiza verificação de interiores (entrar/sair)
             this.interiorsManager.update();
 
+            // Processa a fila de pathfinding (A*) uma vez por frame
+            if (this.gridManager) this.gridManager.update();
+
             // Atualiza NPCs
             this.npcManager.update(time, delta);
 
@@ -1485,8 +1494,10 @@ export default class GameScene extends Phaser.Scene {
         const currentCount = this.players.length;
         if (currentCount >= 5) return;
 
-        const nextIndex = currentCount;
-        if (nextIndex >= window.gameConfig.ALL_PLAYERS.length) return;
+        // Escolhe o primeiro agente que ainda não está no esquadrão (o esquadrão escolhido pode não ser [0..n-1])
+        const usedNames = new Set(this.players.map(p => p.name));
+        const nextIndex = window.gameConfig.ALL_PLAYERS.findIndex(p => !usedNames.has(p.name));
+        if (nextIndex === -1) return;
 
         const spawnData = window.gameConfig.ALL_PLAYERS[nextIndex];
 
@@ -1504,7 +1515,7 @@ export default class GameScene extends Phaser.Scene {
         const newPlayerConfig = { ...spawnData, x: spawnX, y: spawnY };
 
         const player = new Player(this, newPlayerConfig);
-        player.squadIndex = nextIndex + 1;
+        player.squadIndex = currentCount + 1;
 
         if (player.sprite) {
             this.players.push(player);
@@ -1541,8 +1552,8 @@ export default class GameScene extends Phaser.Scene {
 
             // Notificação de Reforço (Rank e Nome)
             let rankKey = 'notification_rank_soldier';
-            if (nextIndex === 3) rankKey = 'notification_rank_lieutenant';
-            if (nextIndex === 4) rankKey = 'notification_rank_colonel';
+            if (currentCount === 3) rankKey = 'notification_rank_lieutenant';
+            if (currentCount === 4) rankKey = 'notification_rank_colonel';
 
             this.showReinforcementNotification(this.languageManager.get(rankKey), player.name);
 
@@ -2765,10 +2776,21 @@ export default class GameScene extends Phaser.Scene {
 		// Atualiza a lógica interna do joystick para calcular forceX e forceY baseados no ponteiro ativo
 		this.virtualJoystick.update();
 
-		// Se não houver força aplicada (joystick parado ou inativo), não faz nada
-		if (this.virtualJoystick.forceX === 0 && this.virtualJoystick.forceY === 0) return;
-
 		const selectedUnits = this.unitController ? this.unitController.selectedUnits : [];
+
+		// Se não houver força aplicada (joystick parado ou inativo), não faz nada.
+		// Na transição ativo -> solto, para o esquadrão (senão continuam deslizando com a última velocidade).
+		if (this.virtualJoystick.forceX === 0 && this.virtualJoystick.forceY === 0) {
+			if (this._joystickWasActive) {
+				this._joystickWasActive = false;
+				selectedUnits.forEach(u => {
+					if (u.health > 0 && !u.isDashing && u.stopMovement) u.stopMovement();
+				});
+			}
+			return;
+		}
+		this._joystickWasActive = true;
+
 		if (selectedUnits.length === 0) return;
 
 		const leader = selectedUnits[0];

@@ -896,8 +896,22 @@ export default class UIManager {
                 return; // Não equipa como arma
             }
             
-            // Troca a arma
-            unit.selectedWeapon = itemKey;
+            // Granada é consumível: usa em vez de equipar
+            if (itemKey === 'smoke_grenade') {
+                if (unit.health > 0 && unit.useSmokeGrenade) unit.useSmokeGrenade();
+                this.updateItemSlots(selectedUnits);
+                return;
+            }
+
+            // Troca a arma (a equipada fica fora do inventário: troca de lugar com a antiga para não duplicar/perder)
+            if (itemKey !== unit.selectedWeapon) {
+                const invIndex = unit.inventory.indexOf(itemKey);
+                if (invIndex !== -1 && this.scene.inventoryPanel) {
+                    this.scene.inventoryPanel.equipWeapon(unit, invIndex, itemKey);
+                } else {
+                    unit.selectedWeapon = itemKey;
+                }
+            }
             
             // Atualiza a UI imediatamente para mostrar o destaque
             this.updateItemSlots(selectedUnits);

@@ -912,7 +912,7 @@ export default class NPCManager {
                                     } else {
                                         npc.path = null; // Nenhum caminho encontrado
                                     }
-                                });
+                                }, npc);
                             }
 
                             // Se um caminho existe, segue-o
@@ -928,22 +928,9 @@ export default class NPCManager {
                                     }
                                 }
                             } else {
-                                // Se não houver caminho, para e espera o próximo recalculo
-                                npc.body.setVelocity(0);
-                            }
-
-                            // Lógica de Grupo: Cercar o jogador
-                            if (npc.groupId) {
-                                const groupMembers = this.npcs.filter(n => n.groupId === npc.groupId && n.active && !n.isDead);
-                                const count = groupMembers.length;
-
-                                if (count > 1) {
-                                    const index = groupMembers.indexOf(npc);
-                                    const radius = Math.max(60, npc.attackRadius * 0.8); // Raio do cerco (80% do alcance de ataque)
-                                    const angle = (Math.PI * 2 / count) * index;
-
-                                    // A lógica de pathfinding já mira no alvo, o cerco pode ser uma melhoria futura
-                                }
+                                // Sem caminho A* (mesmo tile do alvo, destino bloqueado ou cálculo pendente):
+                                // vai direto ao alvo em vez de ficar parado (o collider impede atravessar paredes)
+                                this.scene.physics.moveTo(npc, target.x, target.y, npc.speed);
                             }
                         } else {
                             npc.body.setVelocity(0);
@@ -1638,6 +1625,7 @@ export default class NPCManager {
         if (this.scene.anims.exists(deadKey)) {
             npc.body.stop();
             npc.body.enable = false; // Desabilita física
+            npc.disableInteractive(); // Cadáver não participa do hit-test de input
             npc.play(deadKey);
             this.npcs = this.npcs.filter(n => n !== npc); // Remove da lista de atualização/alvo
             npc.setDepth(1); // Garante que o corpo fique no chão (abaixo dos vivos)
@@ -1647,7 +1635,7 @@ export default class NPCManager {
                 targets: npc,
                 alpha: 0,
                 duration: 1500,
-                delay: 10000000, // Espera 1 segundo mostrando o corpo
+                delay: 10000, // Mostra o corpo por 10 segundos antes de sumir
                 onComplete: () => npc.destroy()
             });
         } else {

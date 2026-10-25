@@ -64,7 +64,9 @@ export default class MissionManager {
         this.stepState = { talked: false, bombing: false, extraction: false, startKills: 0, survivalMet: false, stepStartTime: 0, lastRespawnTime: 0, visualTimerStarted: false };
         this.visualTimerState = null;
 
-        this.startTime = this.scene.time.now;
+        // Relógio de jogo ativo (só avança no update, que não roda com o jogo pausado/diálogos abertos)
+        this.activeTime = 0;
+        this.startTime = 0;
         this.oneMinuteWarningShown = false;
 
         // Carrega preferência de glow do timer
@@ -196,6 +198,10 @@ export default class MissionManager {
     update(time, delta) {
         if (this.isGameOver || !this.config) return;
 
+        // Usa o tempo ativo em vez do relógio da cena: pausa, mapa, ajuda e diálogos não consomem o tempo da missão
+        this.activeTime = (this.activeTime || 0) + delta;
+        time = this.activeTime;
+
         // 1. Verificar Tempo Limite
         if (this.config.timeLimit) {
             const elapsed = time - this.startTime;
@@ -285,7 +291,7 @@ export default class MissionManager {
                 }
 
                 // Lógica de Respawn Periódico
-                if (currentObj.respawnInterval && currentObj.spawnNpcs) {
+                if (currentObj.respawnInterval && currentObj.spawnNpcs && currentObj.spawnNpcs.length > 0) {
                     if (time - this.stepState.lastRespawnTime >= currentObj.respawnInterval) {
                         this.stepState.lastRespawnTime = time;
                         if (this.scene.npcManager) {
@@ -1247,6 +1253,7 @@ export default class MissionManager {
             const nextMissionId = `missao${nextNum}`;
             url.searchParams.set('mission', nextMissionId);
             url.searchParams.delete('autostart'); // Remove flag para ir ao lobby
+            url.searchParams.delete('reset_levels'); // O reset vale só para o "Tentar de Novo", não para as próximas missões
             url.searchParams.set('view', 'base'); // Vai para o laboratório
             window.location.href = url.toString();
         };

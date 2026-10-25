@@ -262,10 +262,9 @@ export default class Minimap {
     }
 
     destroyAndRecreate() {
-        const wasVisible = this.visible;
         this.destroy();
         this.create();
-        // Restaura o estado de visibilidade anterior
-        if (!wasVisible) this.toggle();
+        // Restaura o estado de visibilidade anterior (this.visible não é alterado por destroy/create)
+        if (this.container) this.container.setVisible(this.visible);
     }
 }

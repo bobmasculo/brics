@@ -143,8 +143,16 @@ export default class ItemsManager {
 
             // 1. Auto-equipar se for uma arma com dano
             let actionVerb = "pegou";
-            if (wConfig && wConfig.minDamage) {
-                player.selectedWeapon = item.itemKey;
+            // A arma equipada fica fora do inventário: troca com a anterior (que volta para a mochila) para não duplicar/perder.
+            // Bomba e granada têm dano mas são consumíveis/itens de missão: não equipam.
+            const consumables = ['bomba', 'smoke_grenade'];
+            if (wConfig && wConfig.minDamage && !consumables.includes(item.itemKey)) {
+                const newIndex = player.inventory.length - 1;
+                if (this.scene.inventoryPanel) {
+                    this.scene.inventoryPanel.equipWeapon(player, newIndex, item.itemKey);
+                } else {
+                    player.selectedWeapon = item.itemKey;
+                }
                 actionVerb = "equipou";
             }
 

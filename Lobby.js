@@ -263,8 +263,13 @@ export default class Lobby extends Phaser.Scene {
                 classText: null
             };
             
-            if (saved) {
-                const data = JSON.parse(saved);
+            let data = null;
+            try {
+                data = saved ? JSON.parse(saved) : null;
+            } catch (e) {
+                console.warn(`[Lobby] Save corrompido para ${spawnData.name}, ignorando.`, e);
+            }
+            if (data) {
                 playerData.xp = data.xp || 0;
                 playerData.level = window.gameConfig.getXpDetails(playerData.xp).level;
                 playerData.insanity = data.insanity || 0;
@@ -1015,7 +1020,12 @@ export default class Lobby extends Phaser.Scene {
 
         const key = `brics_player_${player.name}`;
         const saved = localStorage.getItem(key);
-        let data = saved ? JSON.parse(saved) : {};
+        let data = {};
+        try {
+            data = saved ? JSON.parse(saved) || {} : {};
+        } catch (e) {
+            data = {};
+        }
         data.insanity = 0;
         localStorage.setItem(key, JSON.stringify(data));
 

@@ -21,9 +21,11 @@ export default class GridManager {
         if (window.EasyStar) {
             this.easystar = new EasyStar.js();
 
-            // 1. Cria a grade baseada no tamanho do mundo
-            const gridWidth = Math.floor(window.gameConfig.MAP_WIDTH / this.tileWidth);
-            const gridHeight = Math.floor(window.gameConfig.MAP_HEIGHT / this.tileHeight);
+            // 1. Cria a grade cobrindo apenas a área usada (mapa visual + obstáculos + interiores).
+            // O mundo físico (MAP_WIDTH x MAP_HEIGHT = 105000px) geraria ~10 milhões de células.
+            const extent = this.computeGridExtent();
+            const gridWidth = Math.ceil(extent.width / this.tileWidth);
+            const gridHeight = Math.ceil(extent.height / this.tileHeight);
             this.grid = Array(gridHeight).fill(0).map(() => Array(gridWidth).fill(0));
 
             // 2. Marca os obstáculos na grade
@@ -48,6 +50,7 @@ export default class GridManager {
             this.easystar.setGrid(this.grid);
             this.easystar.setAcceptableTiles([0]); // 0 é caminhável
             this.easystar.enableDiagonals();
+            this.easystar.disableCornerCutting(); // Evita caminhos que cortam a quina dos prédios
             this.easystar.setIterationsPerCalculation(1000); // Ajuste de performance
         } else {
             console.warn("Biblioteca EasyStar.js não encontrada. Pathfinding não funcionará.");
@@ -77,7 +80,7 @@ export default class GridManager {
     }
 
     // Novo método para encontrar um caminho usando A*
-    findPath(startWorldX, startWorldY, endWorldX, endWorldY, callback) {
+    findPath(startWorldX, startWorldY, endWorldX, endWorldY, callback, owner = null) {
         if (!this.easystar) {
             callback(null); // Retorna nulo se o pathfinder não estiver disponível
             return;
@@ -99,7 +102,14 @@ export default class GridManager {
         let endI = Phaser.Math.Clamp(Math.floor(endWorldX / this.tileWidth), 0, gridWidth - 1);
         let endJ = Phaser.Math.Clamp(Math.floor(endWorldY / this.tileHeight), 0, gridHeight - 1);
 
-        this.easystar.findPath(startI, startJ, endI, endJ, (path) => {
+        // Cancela o pedido anterior do mesmo dono (unidade/NPC) para não acumular na fila do EasyStar
+        if (owner && owner._pathRequestId !== undefined) {
+            this.easystar.cancelPath(owner._pathRequestId);
+            owner._pathRequestId = undefined;
+        }
+
+        const requestId = this.easystar.findPath(startI, startJ, endI, endJ, (path) => {
+            if (owner) owner._pathRequestId = undefined;
             if (path === null) {
                 callback(null);
             } else {
@@ -108,8 +118,46 @@ export default class GridManager {
                 callback(worldPath);
             }
         });
+        if (owner) owner._pathRequestId = requestId;
+    }
 
-        // Essencial: Inicia o cálculo do caminho
-        this.easystar.calculate();
+    // Cancela o pedido de caminho pendente de um dono (ex: ao dar uma nova ordem ou ao morrer)
+    cancelPath(owner) {
+        if (this.easystar && owner && owner._pathRequestId !== undefined) {
+            this.easystar.cancelPath(owner._pathRequestId);
+            owner._pathRequestId = undefined;
+        }
+    }
+
+    // Deve ser chamado uma vez por frame: processa a fila do EasyStar (cálculo incremental)
+    update() {
+        if (this.easystar) this.easystar.calculate();
+    }
+
+    // Calcula a área que a grade precisa cobrir
+    computeGridExtent() {
+        const margin = this.tileWidth * 4;
+        let width = window.gameConfig.VISUAL_MAP_WIDTH || 3200;
+        let height = window.gameConfig.VISUAL_MAP_HEIGHT || 1800;
+
+        this.obstacles.forEach(obstacle => {
+            const bounds = obstacle.body || obstacle.getBounds();
+            width = Math.max(width, bounds.right);
+            height = Math.max(height, bounds.bottom);
+        });
+
+        (window.gameConfig.INTERIORS || []).forEach(interior => {
+            const inside = interior.inside;
+            if (!inside) return;
+            const w = inside.width || 0;
+            const h = inside.height || 0;
+            width = Math.max(width, (inside.spawnX || 0) + w, (inside.exitX || 0) + w);
+            height = Math.max(height, (inside.spawnY || 0) + h, (inside.exitY || 0) + h);
+        });
+
+        return {
+            width: Math.min(width + margin, window.gameConfig.MAP_WIDTH),
+            height: Math.min(height + margin, window.gameConfig.MAP_HEIGHT)
+        };
     }
 }

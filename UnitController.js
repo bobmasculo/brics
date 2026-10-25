@@ -323,7 +323,7 @@ export default class UnitController {
                             } else {
                                 if (this.scene.uiManager) this.scene.uiManager.updateStatus(this.scene.languageManager.get('warning_cant_reach_destination'));
                             }
-                        });
+                        }, this); // Dono = controller: um novo clique cancela o cálculo pendente anterior
                     }
                 } else {
                     // Movimento livre original

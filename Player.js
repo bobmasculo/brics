@@ -329,6 +329,7 @@ export default class Player {
 
     // Toca a animação de idle baseada na última direção
     playIdle() {
+        if (this.isDead) return; // Não tira o cadáver da animação de morte
         let anim = `idle_${this.lastDirection}`;
         
         // Fallback para diagonais: se não houver idle diagonal, usa cardinal
@@ -371,6 +372,9 @@ export default class Player {
     get y() { return this.sprite.y; }
 
     takeDamage(amount, source = null) {
+        // Unidade morta não recebe mais dano (beams, DoT e tiros já disparados)
+        if (this.isDead || this.health <= 0) return;
+
         // Se God Mode estiver ativo, ignora qualquer dano
         if (this.scene.isGodMode) return;
 
@@ -440,7 +444,10 @@ export default class Player {
     }
 
     die() {
-        
+        // Zera movimento/caminho para não retomar o destino antigo ao reviver
+        this.stopMovement();
+        if (this.scene.gridManager) this.scene.gridManager.cancelPath(this);
+
         this.isDead = true;
         
         // Avisa que o player morreu
@@ -469,8 +476,8 @@ export default class Player {
             this.sprite.play(deathAnimKey, true);
 
             // Garante que a animação pare no último quadro e não entre em loop ou mude
-            this.sprite.on(Phaser.Animations.Events.ANIMATION_COMPLETE, (anim) => {
-                if (anim.key === deathAnimKey) this.sprite.stop();
+            this.sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + deathAnimKey, () => {
+                this.sprite.stop();
             }, this);
         } else {
             // Fallback se não houver animação: escurece e deita (rotação opcional)
@@ -496,7 +503,7 @@ export default class Player {
             this.sprite.setAlpha(1);
             if (this.sprite.body) this.sprite.body.enable = true;
             this.sprite.setInteractive({ pixelPerfect: true, alphaTolerance: 1 });
-            this.playIdle();
+            this.stopMovement(); // Garante que volta parado (sem velocidade/caminho antigos)
         }
         this.drawHealthBar();
         this.saveStats();
